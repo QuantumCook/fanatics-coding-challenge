@@ -1,9 +1,8 @@
 package com.cook.codechallenge.client;
 
+import com.cook.codechallenge.domain.UserInfo;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +19,7 @@ public class GoRestClient {
 
     /**
      * Make a GET request to a URL with an access token
+     *
      * @param requestUri for the endpoint
      * @param accessToken to add to request headers
      * @return the response
@@ -35,24 +35,26 @@ public class GoRestClient {
 
     /**
      * Make a PUT request to a URL with an access token
+     *
      * @param requestUri for the endpoint
      * @param accessToken to add to request headers
      * @param requestBody map of body keys and values
      * @return the response
      */
     public Mono<ResponseEntity<String>> processPutRequest(final String requestUri, final String accessToken,
-                                                          final MultiValueMap<String,String> requestBody) {
+                                                          final UserInfo requestBody) {
         return webClient
                 .put()
                 .uri(requestUri)
                 .headers(httpHeaders -> httpHeaders.setAll(formatHeaderMap(accessToken)))
-                .body(BodyInserters.fromFormData(requestBody))
+                .bodyValue(requestBody)
                 .retrieve()
                 .toEntity(String.class);
     }
 
     /**
      * Make a DELETE request to a URL with an access token
+     *
      * @param requestUri for the endpoint
      * @param accessToken to add to request headers
      * @return the response
@@ -66,6 +68,12 @@ public class GoRestClient {
                 .toEntity(String.class);
     }
 
+    /**
+     * Format header info to be used for http requests
+     *
+     * @param accessToken to add to request headers
+     * @return a map containing http header info
+     */
     private Map<String, String> formatHeaderMap(final String accessToken) {
         HttpHeaders headersMap = new HttpHeaders();
         headersMap.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
