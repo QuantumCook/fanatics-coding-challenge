@@ -2,10 +2,12 @@ package com.cook.codechallenge.service;
 
 import com.cook.codechallenge.client.GoRestClient;
 import com.cook.codechallenge.domain.UserInfo;
+import com.cook.codechallenge.exception.CustomException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,19 @@ public class CodeChallengeService {
      */
     private final GoRestClient goRestClient;
 
+    public ResponseEntity<String> launchCodeChallenge() {
+        try {
+            final UserInfo user = getLastUserOnPage();
+            modifyLastUser(user);
+            deleteLastUser(user.getId());
+            getNonExistentUser();
+            return new ResponseEntity<>("Workflow complete", HttpStatus.OK);
+
+        } catch (CustomException exception) {
+            return new ResponseEntity<>(exception.getMessage(), exception.getStatusCode());
+        }
+    }
+
     /**
      * Obtains one page of users from the list users endpoint of the goRestClient
      * Sorts user list by name and returns a record for the last user in the list
@@ -44,13 +59,19 @@ public class CodeChallengeService {
         final String uri = BASE_URL + GO_REST_USERS + "?" + PAGE + "=" + PAGE_NUMBER;
         final ResponseEntity<String> response = goRestClient.processGetRequest(uri, ACCESS_TOKEN).block();
 
-        if (response == null) {
-            return null;
-        } else {
-            final HttpHeaders headers = response.getHeaders();
-            log.info("Total number of pages: {}", headers.get(X_PAGINATION_PAGES));
+        if(response != null) {
+            if(response.getStatusCode().is2xxSuccessful()){
+                final HttpHeaders headers = response.getHeaders();
+                log.info("Total number of pages: {}", headers.get(X_PAGINATION_PAGES));
 
-            return processUserListBody(response.getBody());
+                return processUserListBody(response.getBody());
+            }
+            else {
+                throw new CustomException("Get user request: failed", response.getStatusCode());
+            }
+        }
+        else {
+            throw new CustomException("Get user request: failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -67,8 +88,8 @@ public class CodeChallengeService {
             userInfoList = mapper.readValue(
                     body,
                     mapper.getTypeFactory().constructCollectionType(List.class, UserInfo.class));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
         }
 
         //Sort list by UserInfo.name field
@@ -89,7 +110,18 @@ public class CodeChallengeService {
     public void modifyLastUser(final UserInfo user) {
         user.setName(LEA_COOK);
         final String uri = BASE_URL + GO_REST_USERS + "/" + user.getId();
-        goRestClient.processPutRequest(uri, ACCESS_TOKEN, user).block();
+        final ResponseEntity<String> response = goRestClient.processPutRequest(uri, ACCESS_TOKEN, user).block();
+        if(response != null) {
+            if(response.getStatusCode().is2xxSuccessful()){
+                log.info("Modify user request: success");
+            }
+            else {
+                throw new CustomException("Modify user request: failed", response.getStatusCode());
+            }
+        }
+        else {
+            throw new CustomException("Modify user request: failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -99,7 +131,18 @@ public class CodeChallengeService {
      */
     public void deleteLastUser(final String userId) {
         final String uri = BASE_URL + GO_REST_USERS + "/" + userId;
-        goRestClient.processDeleteRequest(uri, ACCESS_TOKEN).block();
+        final ResponseEntity<String> response = goRestClient.processDeleteRequest(uri, ACCESS_TOKEN).block();
+        if(response != null) {
+            if(response.getStatusCode().is2xxSuccessful()){
+                log.info("Delete user request: success");
+            }
+            else {
+                throw new CustomException("Delete user request: failed", response.getStatusCode());
+            }
+        }
+        else {
+            throw new CustomException("Delete user request: failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -108,11 +151,10 @@ public class CodeChallengeService {
      */
     public void getNonExistentUser() {
         final String getBadUserUri = BASE_URL + GO_REST_USERS + "/" + NONEXISTENT_USER_ID;
-        final ResponseEntity<String> getBadUserResponse =
-                goRestClient.processGetRequest(getBadUserUri, ACCESS_TOKEN).block();
-        if (getBadUserResponse != null) {
-            log.info("Response code for get request of nonexistent user {}",
-                    getBadUserResponse.getStatusCode());
+        try {
+            goRestClient.processGetRequest(getBadUserUri, ACCESS_TOKEN).block();
+        } catch (CustomException exception) {
+            log.info("Status Code from goRest invalid get user: {}", exception.getStatusCode());
         }
     }
 }

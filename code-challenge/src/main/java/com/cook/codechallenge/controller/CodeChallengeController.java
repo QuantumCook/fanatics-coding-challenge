@@ -1,9 +1,11 @@
-package com.cook.codechallenge.resource;
+package com.cook.codechallenge.controller;
 
 import com.cook.codechallenge.domain.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,12 +35,7 @@ public class CodeChallengeController {
      * Attempt to retrieve a nonexistent user with ID 5555. Log the resulting http response code.
      */
     @GetMapping(path = "/launch", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String launchFanaticsCodeChallenge() {
-        final UserInfo user = codeChallengeService.getLastUserOnPage();
-        codeChallengeService.modifyLastUser(user);
-        codeChallengeService.deleteLastUser(user.getId());
-        codeChallengeService.getNonExistentUser();
-
-        return "Done";
+    public ResponseEntity<String> launchFanaticsCodeChallenge() {
+        return codeChallengeService.launchCodeChallenge();
     }
 }

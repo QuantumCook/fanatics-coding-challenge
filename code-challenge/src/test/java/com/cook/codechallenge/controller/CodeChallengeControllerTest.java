@@ -1,4 +1,4 @@
-package com.cook.codechallenge.resource;
+package com.cook.codechallenge.controller;
 
 public class CodeChallengeControllerTest {
 }

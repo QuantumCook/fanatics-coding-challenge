@@ -1,6 +1,8 @@
 package com.cook.codechallenge.client;
 
 import com.cook.codechallenge.domain.UserInfo;
+import com.cook.codechallenge.exception.CustomException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -9,12 +11,13 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Component
+@Log4j2
 public class GoRestClient {
 
     private final WebClient webClient;
 
-    public GoRestClient() {
-        this.webClient = WebClient.create();
+    public GoRestClient(final WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.build();
     }
 
     /**
@@ -30,7 +33,10 @@ public class GoRestClient {
                 .uri(requestUri)
                 .headers(httpHeaders -> httpHeaders.setAll(formatHeaderMap(accessToken)))
                 .retrieve()
+                .onStatus(HttpStatus::isError, response -> response.toEntity(String.class)
+                        .map(entity -> new CustomException("GoRest get request failed", response.statusCode())))
                 .toEntity(String.class);
+
     }
 
     /**
@@ -49,6 +55,8 @@ public class GoRestClient {
                 .headers(httpHeaders -> httpHeaders.setAll(formatHeaderMap(accessToken)))
                 .bodyValue(requestBody)
                 .retrieve()
+                .onStatus(HttpStatus::isError, response -> response.toEntity(String.class)
+                        .map(entity -> new CustomException("GoRest put request failed", response.statusCode())))
                 .toEntity(String.class);
     }
 
@@ -65,6 +73,8 @@ public class GoRestClient {
                 .uri(requestUri)
                 .headers(httpHeaders -> httpHeaders.setAll(formatHeaderMap(accessToken)))
                 .retrieve()
+                .onStatus(HttpStatus::isError, response -> response.toEntity(String.class)
+                        .map(entity -> new CustomException("GoRest delete request failed", response.statusCode())))
                 .toEntity(String.class);
     }
 
