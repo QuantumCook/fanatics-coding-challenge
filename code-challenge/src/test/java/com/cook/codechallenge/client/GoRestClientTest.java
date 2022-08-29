@@ -43,7 +43,8 @@ public class GoRestClientTest {
                         .build())
                 );
         GoRestClient goRestClient = new GoRestClient(webClientBuilder);
-        CustomException thrown = catchThrowableOfType(() -> goRestClient.processGetRequest(URI, ACCESS_TOKEN).block(), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                goRestClient.processGetRequest(URI, ACCESS_TOKEN).block(), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -69,7 +70,8 @@ public class GoRestClientTest {
                         .build())
                 );
         GoRestClient goRestClient = new GoRestClient(webClientBuilder);
-        CustomException thrown = catchThrowableOfType(() -> goRestClient.processPutRequest(URI, ACCESS_TOKEN, USER_INFO).block(), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                goRestClient.processPutRequest(URI, ACCESS_TOKEN, USER_INFO).block(), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -81,7 +83,8 @@ public class GoRestClientTest {
                         .build())
                 );
         GoRestClient goRestClient = new GoRestClient(webClientBuilder);
-        CustomException thrown = catchThrowableOfType(() -> goRestClient.processPutRequest(URI, ACCESS_TOKEN, USER_INFO).block(), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                goRestClient.processPutRequest(URI, ACCESS_TOKEN, USER_INFO).block(), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.NOT_MODIFIED);
     }
 
@@ -104,7 +107,8 @@ public class GoRestClientTest {
                         .build())
                 );
         GoRestClient goRestClient = new GoRestClient(webClientBuilder);
-        CustomException thrown = catchThrowableOfType(() -> goRestClient.processDeleteRequest(URI, ACCESS_TOKEN).block(), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                goRestClient.processDeleteRequest(URI, ACCESS_TOKEN).block(), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -115,7 +119,8 @@ public class GoRestClientTest {
                         .build())
                 );
         GoRestClient goRestClient = new GoRestClient(webClientBuilder);
-        CustomException thrown = catchThrowableOfType(() -> goRestClient.processDeleteRequest(URI, ACCESS_TOKEN).block(), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                goRestClient.processDeleteRequest(URI, ACCESS_TOKEN).block(), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.NOT_MODIFIED);
     }
 }

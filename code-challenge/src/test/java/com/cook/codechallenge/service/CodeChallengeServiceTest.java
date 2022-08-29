@@ -22,7 +22,28 @@ import static org.mockito.Mockito.any;
 
 public class CodeChallengeServiceTest {
 
-    final private static String body = "[{\"id\":2409,\"name\":\"Anunay Gupta\",\"email\":\"gupta_anunay@lemke.info\",\"gender\":\"female\",\"status\":\"inactive\"},{\"id\":2399,\"name\":\"Triloki Nath Pillai DVM\",\"email\":\"pillai_triloki_dvm_nath@connelly-streich.io\",\"gender\":\"female\",\"status\":\"active\"},{\"id\":2397,\"name\":\"Mr. Menka Banerjee\",\"email\":\"mr_menka_banerjee@bartoletti-powlowski.name\",\"gender\":\"male\",\"status\":\"inactive\"},{\"id\":2395,\"name\":\"Mr. Nawal Bhattathiri\",\"email\":\"mr_bhattathiri_nawal@reilly.net\",\"gender\":\"male\",\"status\":\"inactive\"},{\"id\":2394,\"name\":\"Bhudev Dwivedi\",\"email\":\"dwivedi_bhudev@stroman-hoppe.co\",\"gender\":\"male\",\"status\":\"active\"},{\"id\":2393,\"name\":\"Navin Saini\",\"email\":\"navin_saini@macejkovic.com\",\"gender\":\"male\",\"status\":\"inactive\"},{\"id\":2390,\"name\":\"Anila Ahluwalia\",\"email\":\"anila_ahluwalia@barrows-herman.io\",\"gender\":\"male\",\"status\":\"inactive\"},{\"id\":2389,\"name\":\"Anunay Jha\",\"email\":\"anunay_jha@schowalter.io\",\"gender\":\"female\",\"status\":\"active\"},{\"id\":2388,\"name\":\"Sharmila Gupta DC\",\"email\":\"gupta_sharmila_dc@schiller.org\",\"gender\":\"male\",\"status\":\"inactive\"},{\"id\":2387,\"name\":\"Rajendra Malik\",\"email\":\"malik_rajendra@auer.name\",\"gender\":\"female\",\"status\":\"active\"}]";
+    final private static String BODY = "[{\"id\":2409,\"name\":\"Anunay Gupta\"," +
+            "\"email\":\"gupta_anunay@lemke.info\",\"gender\":\"female\"," +
+            "\"status\":\"inactive\"},{\"id\":2399,\"name\":\"Triloki Nath Pillai DVM\"," +
+            "\"email\":\"pillai_triloki_dvm_nath@connelly-streich.io\"," +
+            "\"gender\":\"female\",\"status\":\"active\"}," +
+            "{\"id\":2397,\"name\":\"Mr. Menka Banerjee\"," +
+            "\"email\":\"mr_menka_banerjee@bartoletti-powlowski.name\"," +
+            "\"gender\":\"male\",\"status\":\"inactive\"}," +
+            "{\"id\":2395,\"name\":\"Mr. Nawal Bhattathiri\"," +
+            "\"email\":\"mr_bhattathiri_nawal@reilly.net\",\"gender\":\"male\"," +
+            "\"status\":\"inactive\"},{\"id\":2394,\"name\":\"Bhudev Dwivedi\"," +
+            "\"email\":\"dwivedi_bhudev@stroman-hoppe.co\",\"gender\":\"male\"," +
+            "\"status\":\"active\"},{\"id\":2393,\"name\":\"Navin Saini\"," +
+            "\"email\":\"navin_saini@macejkovic.com\",\"gender\":\"male\"," +
+            "\"status\":\"inactive\"},{\"id\":2390,\"name\":\"Anila Ahluwalia\"" +
+            ",\"email\":\"anila_ahluwalia@barrows-herman.io\",\"gender\":\"male\"," +
+            "\"status\":\"inactive\"},{\"id\":2389,\"name\":\"Anunay Jha\"," +
+            "\"email\":\"anunay_jha@schowalter.io\",\"gender\":\"female\"," +
+            "\"status\":\"active\"},{\"id\":2388,\"name\":\"Sharmila Gupta DC\"," +
+            "\"email\":\"gupta_sharmila_dc@schiller.org\",\"gender\":\"male\"," +
+            "\"status\":\"inactive\"},{\"id\":2387,\"name\":\"Rajendra Malik\"," +
+            "\"email\":\"malik_rajendra@auer.name\",\"gender\":\"female\",\"status\":\"active\"}]";
     private static final UserInfo USER_INFO =
             new UserInfo("123", "Bet Fanatics",
                     "betFan@gmail.com", "male", "active");
@@ -30,15 +51,18 @@ public class CodeChallengeServiceTest {
     void testLaunchCodeChallenge_Success() {
         MultiValueMap<String, String> headersMap = new LinkedMultiValueMap<>();
         headersMap.add("X-Pagination-Pages", "45");
-        ResponseEntity<String> mockListUserResponse = new ResponseEntity<>(body, headersMap, HttpStatus.OK);
+        ResponseEntity<String> mockListUserResponse = new ResponseEntity<>(BODY, headersMap, HttpStatus.OK);
         GoRestClient goRestClientMock = Mockito.mock(GoRestClient.class);
-        when(goRestClientMock.processGetRequest(anyString(), anyString())).thenReturn(Mono.just(mockListUserResponse));
+        when(goRestClientMock.processGetRequest(anyString(), anyString()))
+                .thenReturn(Mono.just(mockListUserResponse));
 
         ResponseEntity<String> mockModifyUserResponse = new ResponseEntity<>(HttpStatus.OK);
-        when(goRestClientMock.processPutRequest(anyString(), anyString(), any())).thenReturn(Mono.just(mockModifyUserResponse));
+        when(goRestClientMock.processPutRequest(anyString(), anyString(), any()))
+                .thenReturn(Mono.just(mockModifyUserResponse));
 
         ResponseEntity<String> mockDeleteUserResponse = new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        when(goRestClientMock.processDeleteRequest(anyString(), anyString())).thenReturn(Mono.just(mockDeleteUserResponse));
+        when(goRestClientMock.processDeleteRequest(anyString(), anyString()))
+                .thenReturn(Mono.just(mockDeleteUserResponse));
 
         CodeChallengeService codeChallengeService = new CodeChallengeService(goRestClientMock);
 
@@ -52,15 +76,18 @@ public class CodeChallengeServiceTest {
     void testLaunchCodeChallenge_Error() {
         MultiValueMap<String, String> headersMap = new LinkedMultiValueMap<>();
         headersMap.add("X-Pagination-Pages", "45");
-        ResponseEntity<String> mockListUserResponse = new ResponseEntity<>(body, headersMap, HttpStatus.OK);
+        ResponseEntity<String> mockListUserResponse = new ResponseEntity<>(BODY, headersMap, HttpStatus.OK);
         GoRestClient goRestClientMock = Mockito.mock(GoRestClient.class);
-        when(goRestClientMock.processGetRequest(anyString(), anyString())).thenReturn(Mono.just(mockListUserResponse));
+        when(goRestClientMock.processGetRequest(anyString(), anyString()))
+                .thenReturn(Mono.just(mockListUserResponse));
 
         ResponseEntity<String> mockModifyUserResponse = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        when(goRestClientMock.processPutRequest(anyString(), anyString(), any())).thenReturn(Mono.just(mockModifyUserResponse));
+        when(goRestClientMock.processPutRequest(anyString(), anyString(), any()))
+                .thenReturn(Mono.just(mockModifyUserResponse));
 
         ResponseEntity<String> mockDeleteUserResponse = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        when(goRestClientMock.processDeleteRequest(anyString(), anyString())).thenReturn(Mono.just(mockDeleteUserResponse));
+        when(goRestClientMock.processDeleteRequest(anyString(), anyString()))
+                .thenReturn(Mono.just(mockDeleteUserResponse));
 
         CodeChallengeService codeChallengeService = new CodeChallengeService(goRestClientMock);
 
@@ -74,7 +101,7 @@ public class CodeChallengeServiceTest {
     void testGetLastUserOnPage_Success() {
         MultiValueMap<String, String> headersMap = new LinkedMultiValueMap<>();
         headersMap.add("X-Pagination-Pages", "45");
-        ResponseEntity<String> mockResponse = new ResponseEntity<>(body, headersMap, HttpStatus.OK);
+        ResponseEntity<String> mockResponse = new ResponseEntity<>(BODY, headersMap, HttpStatus.OK);
         GoRestClient goRestClientMock = Mockito.mock(GoRestClient.class);
         when(goRestClientMock.processGetRequest(anyString(), anyString())).thenReturn(Mono.just(mockResponse));
 
@@ -97,7 +124,7 @@ public class CodeChallengeServiceTest {
 
     @Test
     void testGetLastUserOnPage_BadResponse() {
-        ResponseEntity<String> mockResponse = new ResponseEntity<>(body,HttpStatus.NOT_FOUND);
+        ResponseEntity<String> mockResponse = new ResponseEntity<>(BODY,HttpStatus.NOT_FOUND);
         GoRestClient goRestClientMock = Mockito.mock(GoRestClient.class);
         when(goRestClientMock.processGetRequest(anyString(), anyString())).thenReturn(Mono.just(mockResponse));
 
@@ -107,6 +134,19 @@ public class CodeChallengeServiceTest {
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
+    @Test
+    void testGetLastUserOnPage_ResponseParsingThrowsError() {
+        String body = "[{id:2409, ame:\"Anunay Gupta\", email :\"gupta_anunay@lemke.info\", " +
+                "gender:\"female\",\"status\":\"inactive\"}]";
+        ResponseEntity<String> mockResponse = new ResponseEntity<>(body,HttpStatus.OK);
+        GoRestClient goRestClientMock = Mockito.mock(GoRestClient.class);
+        when(goRestClientMock.processGetRequest(anyString(), anyString())).thenReturn(Mono.just(mockResponse));
+
+        CodeChallengeService codeChallengeService = new CodeChallengeService(goRestClientMock);
+
+        CustomException thrown = catchThrowableOfType(codeChallengeService::getLastUserOnPage, CustomException.class);
+        Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     @Test
     void testModifyLastUser() {
         ResponseEntity<String> mockResponse = new ResponseEntity<>(HttpStatus.OK);
@@ -127,7 +167,8 @@ public class CodeChallengeServiceTest {
 
         CodeChallengeService codeChallengeService = new CodeChallengeService(goRestClientMock);
 
-        CustomException thrown = catchThrowableOfType(() -> codeChallengeService.modifyLastUser(USER_INFO), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                codeChallengeService.modifyLastUser(USER_INFO), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.NOT_MODIFIED);
     }
 
@@ -138,7 +179,8 @@ public class CodeChallengeServiceTest {
 
         CodeChallengeService codeChallengeService = new CodeChallengeService(goRestClientMock);
 
-        CustomException thrown = catchThrowableOfType(() -> codeChallengeService.modifyLastUser(USER_INFO), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                codeChallengeService.modifyLastUser(USER_INFO), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -162,7 +204,8 @@ public class CodeChallengeServiceTest {
 
         CodeChallengeService codeChallengeService = new CodeChallengeService(goRestClientMock);
 
-        CustomException thrown = catchThrowableOfType(() -> codeChallengeService.deleteLastUser(USER_INFO.getId()), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                codeChallengeService.deleteLastUser(USER_INFO.getId()), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -173,7 +216,8 @@ public class CodeChallengeServiceTest {
 
         CodeChallengeService codeChallengeService = new CodeChallengeService(goRestClientMock);
 
-        CustomException thrown = catchThrowableOfType(() -> codeChallengeService.deleteLastUser(USER_INFO.getId()), CustomException.class);
+        CustomException thrown = catchThrowableOfType(() ->
+                codeChallengeService.deleteLastUser(USER_INFO.getId()), CustomException.class);
         Assertions.assertThat(thrown.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

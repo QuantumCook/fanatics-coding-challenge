@@ -17,20 +17,22 @@ public class CodeChallengeController {
 
 
     /**
-     * The service instance used to handle business logic for the controller
+     * The service instance used to handle business logic for the controller.
      * @see CodeChallengeService
      */
     private final CodeChallengeService codeChallengeService;
 
     /**
-     * REST endpoint to launch the code workflow described in the Bet Fanatics Coding Challenge
+     * REST endpoint to launch the code workflow.
      *
      * Retrieve page 3 of the list of all users.
      * Sort the retrieved user list by name.
      * After sorting, log the name of the last user.
-     * Update that user's name to a new value and use the correct http method to save it.
+     * Update that user's name to a new value.
+     * Use the correct http method to save updated user.
      * Delete that user.
-     * Attempt to retrieve a nonexistent user with ID 5555. Log the resulting http response code.
+     * Attempt to retrieve a nonexistent user with ID 5555.
+     * Log the resulting http response code.
      *
      * @return a response entity containing a message and http status code
      */
