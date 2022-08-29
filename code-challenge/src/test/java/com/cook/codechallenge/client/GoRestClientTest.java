@@ -1,8 +1,6 @@
 package com.cook.codechallenge.client;
 
 import com.cook.codechallenge.domain.UserInfo;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +8,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GoRestClientTest {
 

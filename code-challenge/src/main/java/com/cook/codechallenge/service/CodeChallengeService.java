@@ -28,6 +28,8 @@ public class CodeChallengeService {
     private static final String LEA_COOK = "Lea Cook";
     private static final String NONEXISTENT_USER_ID = "5555";
     private static final String X_PAGINATION_PAGES = "X-Pagination-Pages";
+    private static final String MODIFY = "Modify";
+    private static final String DELETE = "Delete";
 
     /**
      * The client used to send requests to GoRest
@@ -36,6 +38,16 @@ public class CodeChallengeService {
      */
     private final GoRestClient goRestClient;
 
+    /**
+     * Retrieve page 3 of the list of all users.
+     * Sort the retrieved user list by name.
+     * After sorting, log the name of the last user.
+     * Update that user's name to a new value and use the correct http method to save it.
+     * Delete that user.
+     * Attempt to retrieve a nonexistent user with ID 5555. Log the resulting http response code.
+     *
+     * @return a response entity containing a message and http status code
+     */
     public ResponseEntity<String> launchCodeChallenge() {
         try {
             final UserInfo user = getLastUserOnPage();
@@ -59,24 +71,24 @@ public class CodeChallengeService {
         final String uri = BASE_URL + GO_REST_USERS + "?" + PAGE + "=" + PAGE_NUMBER;
         final ResponseEntity<String> response = goRestClient.processGetRequest(uri, ACCESS_TOKEN).block();
 
-        if(response != null) {
-            if(response.getStatusCode().is2xxSuccessful()){
+        if (response != null) {
+            if (response.getStatusCode().is2xxSuccessful()) {
                 final HttpHeaders headers = response.getHeaders();
                 log.info("Total number of pages: {}", headers.get(X_PAGINATION_PAGES));
 
                 return processUserListBody(response.getBody());
-            }
-            else {
+            } else {
                 throw new CustomException("Get user request: failed", response.getStatusCode());
             }
-        }
-        else {
+        } else {
             throw new CustomException("Get user request: failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Sorts user list by name and returns a record for the last user in the list
+     *
+     * @param body JSON string from the response body
      *
      * @return a single {@link UserInfo} object
      */
@@ -96,7 +108,7 @@ public class CodeChallengeService {
         userInfoList.sort((Comparator.comparing(UserInfo::getName)));
 
         //Identify last user record in list
-        final UserInfo lastUserName = userInfoList.get(userInfoList.size()-1);
+        final UserInfo lastUserName = userInfoList.get(userInfoList.size() - 1);
         log.info("Name of last user in list: {}", lastUserName.getName());
 
         return lastUserName;
@@ -111,17 +123,7 @@ public class CodeChallengeService {
         user.setName(LEA_COOK);
         final String uri = BASE_URL + GO_REST_USERS + "/" + user.getId();
         final ResponseEntity<String> response = goRestClient.processPutRequest(uri, ACCESS_TOKEN, user).block();
-        if(response != null) {
-            if(response.getStatusCode().is2xxSuccessful()){
-                log.info("Modify user request: success");
-            }
-            else {
-                throw new CustomException("Modify user request: failed", response.getStatusCode());
-            }
-        }
-        else {
-            throw new CustomException("Modify user request: failed", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        logResponse(response, MODIFY);
     }
 
     /**
@@ -132,16 +134,19 @@ public class CodeChallengeService {
     public void deleteLastUser(final String userId) {
         final String uri = BASE_URL + GO_REST_USERS + "/" + userId;
         final ResponseEntity<String> response = goRestClient.processDeleteRequest(uri, ACCESS_TOKEN).block();
-        if(response != null) {
-            if(response.getStatusCode().is2xxSuccessful()){
-                log.info("Delete user request: success");
+        logResponse(response, DELETE);
+    }
+
+    private void logResponse(final ResponseEntity<String> response, final String requestType){
+        final String failureMessage = requestType + " user request: failed";
+        if (response != null) {
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("{} user request: success", requestType);
+            } else {
+                throw new CustomException(failureMessage, response.getStatusCode());
             }
-            else {
-                throw new CustomException("Delete user request: failed", response.getStatusCode());
-            }
-        }
-        else {
-            throw new CustomException("Delete user request: failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            throw new CustomException(failureMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -157,4 +162,5 @@ public class CodeChallengeService {
             log.info("Status Code from goRest invalid get user: {}", exception.getStatusCode());
         }
     }
+
 }

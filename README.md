@@ -1,19 +1,20 @@
 # Bet Fanatics Coding Challenge
 
 ### Overview
-For this coding challenge, you will be interfacing with an existing REST-based API and performing 
+This basic code challenge interfaces with an existing REST-based API and performs
 various operations against that API.  
 
 
 The API and its documentation are located here:  https://gorest.co.in/
 
-Be sure to read the entire page, as it includes details that will be required to finish this exercise.
+### Implementation Description
 
-Fork this repo and do all of your work against that fork. When you are finished, do not submit a pull request.  Notify a member of our team that you are finished and we will review your code together.
+The application uses Spring-Boot MVC and Java 11.
 
-### Instructions
+A single REST endpoint is used to launch the app workflow.
 
-Using the REST API endpoints documented in the link in the previous section:
+### Workflow Operations
+
 1. Retrieve page 3 of the list of all users.
 2. Using a logger, log the total number of pages from the previous request.
 3. Sort the retrieved user list by name.
@@ -21,4 +22,19 @@ Using the REST API endpoints documented in the link in the previous section:
 5. Update that user's name to a new value and use the correct http method to save it.
 6. Delete that user.
 7. Attempt to retrieve a nonexistent user with ID 5555.  Log the resulting http response code.
-8. Write unit tests for all code, mocking out calls to the actual API service.
+
+### Running the application
+
+The application can be launched through Intellij or the command line.
+
+#### Intellij
+
+- Navigate to the application [class](code-challenge/src/main/java/com/cook/codechallenge/CodeChallengeApplication.java)
+- Click the run configuration option in the gutter.
+
+#### Command Line
+
+- execute `mvn spring-boot:run`
+
+#### Launch
+Once the application is running, access http://localhost:8080/challenge/launch to launch the workflow
