@@ -60,6 +60,8 @@ public class GoRestClient {
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> response.toEntity(String.class)
                         .map(entity -> new CustomException("GoRest put request failed", response.statusCode())))
+                .onStatus(HttpStatus::is3xxRedirection, response -> response.toEntity(String.class)
+                        .map(entity -> new CustomException("GoRest put request failed", response.statusCode())))
                 .toEntity(String.class);
     }
 
@@ -77,6 +79,8 @@ public class GoRestClient {
                 .headers(httpHeaders -> httpHeaders.setAll(formatHeaderMap(accessToken)))
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> response.toEntity(String.class)
+                        .map(entity -> new CustomException("GoRest delete request failed", response.statusCode())))
+                .onStatus(HttpStatus::is3xxRedirection, response -> response.toEntity(String.class)
                         .map(entity -> new CustomException("GoRest delete request failed", response.statusCode())))
                 .toEntity(String.class);
     }
